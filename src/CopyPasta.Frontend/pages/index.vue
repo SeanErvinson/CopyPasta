@@ -1,39 +1,75 @@
 <template>
-	<div class="md:flex">
+	<form class="md:flex">
 		<div class="block md:flex-1 mx-auto px-5">
-			<TextArea></TextArea>
+			<TextArea v-model="form.content"></TextArea>
 		</div>
 		<div class="block md:flex-initial">
 			<h2>Options</h2>
-			<div>
-				<label for="expiration">Expires in</label>
-				<select v-if="!customExpiration" id="expiration" name="expiration">
-					<option value="">10 mins</option>
-					<option value="">30 mins</option>
-					<option value="">1 hour</option>
-					<option value="-1">Never</option>
+			<label class="block py-1.5" for="isCustomExpiration">
+				<span>Expires in</span>
+				<select
+					v-if="!isCustomExpiration"
+					id="isCustomExpiration"
+					v-model="form.expiration"
+					class="form-select"
+				>
+					<option value="10">10 mins</option>
+					<option value="30">30 mins</option>
+					<option value="60">1 hour</option>
+					<option value="-1" selected>Never</option>
 				</select>
-				<input v-else type="datetime" />
-				<label for="customExpiration">Custom</label>
-				<input id="customExpiration" v-model="customExpiration" type="checkbox" name="customerExpiration" />
-			</div>
-			<input id="custom" type="checkbox" name="expiration" />
-			<input id="password" type="checkbox" name="expiration" />
+				<input v-else v-model="form.expiration" type="datetime-local" class="form-input" />
+				<span for="isCustomExpiration">Custom</span>
+				<input v-model="isCustomExpiration" type="checkbox" />
+			</label>
+			<label class="block py-1.5" for="isPasswordProtected">
+				<input id="isPasswordProtected" v-model="isPasswordProtected" type="checkbox" @change="form.password = undefined"/>
+				<span>Password protected</span>
+				<input v-if="isPasswordProtected" v-model="form.password" type="text" class="form-input" />
+			</label>
+			<label class="block py-1.5" for="isCustomLink">
+				<input id="isCustomLink" v-model="isCustomLink" type="checkbox" @change="form.customLink = undefined" />
+				<span>Custom Link</span>
+				<input v-if="isCustomLink" v-model="form.customLink" type="text" class="form-input" />
+				<span v-if="isCustomLink">Your url will be {{ $config.axios.baseUrl }}/{{ form.customLink }}</span>
+			</label>
 		</div>
-	</div>
+		<button type="submit" @click.prevent="submitForm">Create</button>
+	</form>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import TextArea from '../components/common/TextArea.vue'
+
+interface Form {
+	content: string
+	expiration: number | undefined
+	password: string | undefined
+	customLink?: string | undefined
+}
+
 export default Vue.extend({
 	components: {
 		TextArea,
 	},
 	data() {
 		return {
-			customExpiration: false,
+			isCustomExpiration: false,
+			isPasswordProtected: false,
+			isCustomLink: false,
+			form: {
+				content: '',
+				expiration: -1,
+				password: undefined,
+				customLink: undefined,
+			} as Form,
 		}
+	},
+	methods: {
+		submitForm(): void {
+			console.log(this.form)
+		},
 	},
 })
 </script>
