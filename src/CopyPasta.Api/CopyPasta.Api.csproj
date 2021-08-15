@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>0b0a28f2-8a6f-4e0b-9b97-3a4d5a1ae3e2</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <None
+      Update="copypasta-project-f26ce3abc036.json"
+      CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference
+      Include="Google.Cloud.Firestore"
+      Version="2.4.0" />
+    <PackageReference
+      Include="MediatR"
+      Version="9.0.0" />
+    <PackageReference
+      Include="MediatR.Extensions.Microsoft.DependencyInjection"
+      Version="9.0.0" />
+    <PackageReference
+      Include="Swashbuckle.AspNetCore"
+      Version="5.6.3" />
+  </ItemGroup>
+</Project>
