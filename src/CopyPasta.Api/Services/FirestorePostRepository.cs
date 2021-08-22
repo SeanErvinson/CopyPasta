@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Dynamic;
 using Newtonsoft.Json;
-using CopyPasta.Api.Dtos;
 
 namespace CopyPasta.Api.Services
 {
@@ -33,7 +32,7 @@ namespace CopyPasta.Api.Services
             return snapshot.Count;
         }
 
-        public async Task<PostDto?> GetPostAsync(string link, CancellationToken cancellationToken = default)
+        public async Task<Post?> GetPostAsync(string link, CancellationToken cancellationToken = default)
         {
             var collection = _database.Collection(CollectionName);
             var query = collection.WhereEqualTo("Link", link).Limit(1);
@@ -42,7 +41,7 @@ namespace CopyPasta.Api.Services
             if (data is null)
                 return null;
             var jsonData = JsonConvert.SerializeObject(data);
-            return JsonConvert.DeserializeObject<PostDto>(jsonData);
+            return JsonConvert.DeserializeObject<Post>(jsonData);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace CopyPasta.Api.Domains
 {
     public class Post
     {
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; private set; }
         public string Link { get; set; }
         public string Content { get; set; }
         public string? Password { get; set; }
@@ -14,6 +14,7 @@ namespace CopyPasta.Api.Domains
 
         public Post(string link, string content)
         {
+            Id = Guid.NewGuid();
             Content = content;
             Link = link;
         }
