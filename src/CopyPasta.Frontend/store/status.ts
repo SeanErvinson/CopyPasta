@@ -28,6 +28,10 @@ export const state = () => ({
 			loading: false,
 			error: false,
 		},
+		checkLinkExists: {
+			loading: false,
+			error: false,
+		},
 	} as StatusMap,
 })
 

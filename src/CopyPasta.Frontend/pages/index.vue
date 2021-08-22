@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container flex flex-col mx-auto">
 		<PostForm />
 		<span v-if="getLoading('initial')">Loading</span>
 		<span v-else>CopyPasta counter: {{ getStats.postCount }}</span>

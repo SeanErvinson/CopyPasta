@@ -27,6 +27,7 @@ export const state = () => ({
 	info: {} as PostInfo,
 	isLocked: true,
 	content: '',
+	linkExists: false,
 })
 
 export type RootState = ReturnType<typeof state>
@@ -41,6 +42,9 @@ export const getters: vuex.GetterTree<RootState, RootState> = {
 	getContent: state => {
 		return state.content
 	},
+	linkExists: state => {
+		return state.linkExists
+	},
 }
 
 export const mutations: vuex.MutationTree<RootState> = {
@@ -52,6 +56,9 @@ export const mutations: vuex.MutationTree<RootState> = {
 	},
 	SET_CONTENT(state, content: string) {
 		state.content = content
+	},
+	SET_LINK_EXIST(state, flag: boolean) {
+		state.linkExists = flag
 	},
 }
 
@@ -87,5 +94,15 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 			commit('status/SET_ERROR', { name: 'post', flag: true } as FlagStatus)
 		}
 		commit('status/SET_LOADING', { name: 'post', flag: false } as FlagStatus)
+	},
+	async checkIfLinkExists({ commit }, value: string) {
+		commit('status/SET_LOADING', { name: 'checkLinkExists', flag: true } as FlagStatus)
+		try {
+			const result = await this.$axios.$get(`posts/${value}/exists`)
+			commit('SET_LINK_EXIST', result)
+		} catch (error) {
+			commit('status/SET_ERROR', { name: 'checkLinkExists', flag: true } as FlagStatus)
+		}
+		commit('status/SET_LOADING', { name: 'checkLinkExists', flag: false } as FlagStatus)
 	},
 }
