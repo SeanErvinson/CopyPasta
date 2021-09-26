@@ -23,8 +23,8 @@ namespace CopyPasta.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostCommand request)
         {
-            await _mediator.Send(request);
-            return Ok();
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpGet("{link}/info")]

@@ -2,7 +2,7 @@
 	<div class="container mx-auto h-full">
 		<div v-if="getInfo.isPasswordProtected"><PasswordModal /></div>
 		<div v-if="!isLocked" class="block p-4 h-full bg-white border border-gray-200 rounded shadow-sm">
-			<p>{{ getContent }}</p>
+			<p v-html="getContent"></p>
 		</div>
 	</div>
 </template>
@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import PasswordModal from '../components/PasswordModal.vue'
+import PasswordModal from '../../components/PasswordModal.vue'
 
 export default Vue.extend({
 	components: {

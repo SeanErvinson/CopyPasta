@@ -25,13 +25,13 @@ export const mutations: vuex.MutationTree<RootState> = {
 
 export const actions: vuex.ActionTree<RootState, RootState> = {
 	async initialize({ commit }) {
-		commit('status/SET_LOADING', { name: 'initial', flag: true } as FlagStatus)
+		commit('status/SET_LOADING', { name: 'initial', flag: true } as FlagStatus, { root: true })
 		try {
 			const stats = await this.$axios.$get('/statistics')
 			commit('SET_STATS', stats)
 		} catch (error) {
-			commit('status/SET_ERROR', { name: 'initial', flag: true } as FlagStatus)
+			commit('status/SET_ERROR', { name: 'initial', flag: true } as FlagStatus, { root: true })
 		}
-		commit('status/SET_LOADING', { name: 'initial', flag: false } as FlagStatus)
+		commit('status/SET_LOADING', { name: 'initial', flag: false } as FlagStatus, { root: true })
 	},
 }

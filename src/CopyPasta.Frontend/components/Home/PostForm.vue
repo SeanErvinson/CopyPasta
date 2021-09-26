@@ -1,76 +1,97 @@
 <template>
-	<form class="px-5 flex-grow md:flex lg:flex md:gap-x-4 lg:gap-x-5">
-		<div class="block mb-2 md:w-2/3 lg:w-3/4">
+	<CFormControl d="flex" :flexDirection="['column', null, 'row']" mx="5" h="100%">
+		<c-box bg="white" :flex="[1, null, 7, null]" borderRadius="md" :my="[2, null, 0]" :mr="[0, null, 2]">
 			<client-only>
 				<TextArea v-model="form.content"></TextArea>
 			</client-only>
-		</div>
-		<div class="block md:flex md:flex-col md:w-1/3 lg:w-1/4">
-			<div class="block bg-white rounded-lg border border-grey-300 py-4 px-5 mb-2">
-				<h2 class="font-semibold text-grey-700 text-lg">Options</h2>
-				<label class="flex flex-col py-1.5" for="isCustomExpiration">
+		</c-box>
+		<c-box :flex="[null, null, 3, 2]" flexGrow="0" flexShrink="0" :my="[2, null, 0]" :ml="[0, null, 2]">
+			<c-box bg="white" py="4" px="5" borderRadius="lg" borderColor="gray.300" :mb="3">
+				<c-heading as="h2" size="lg" color="gray.700" fontWeight="semibold"> Options </c-heading>
+
+				<c-box as="label" d="flex" flexDirection="column" py="1" for="isCustomExpiration">
 					<span>Expires in</span>
-					<select v-if="!isCustomExpiration" v-model="form.expiration" class="form-select rounded-md">
+					<c-select borderRadius="md" v-if="!isCustomExpiration" v-model="form.expiration">
 						<option value="10">10 mins</option>
 						<option value="30">30 mins</option>
 						<option value="60">1 hour</option>
-						<option selected>Never</option>
-					</select>
-					<input v-else type="datetime-local" class="form-input rounded-md" @change="calculatedExpiration" />
+						<option :value="'' || undefined" selected>Never</option>
+					</c-select>
+					<c-input v-else type="datetime-local" @change="calculatedExpiration" />
 					<div>
-						<input id="isCustomExpiration" v-model="isCustomExpiration" type="checkbox" />
-						<span for="isCustomExpiration" class="select-none">Custom</span>
+						<input
+							id="isCustomExpiration"
+							v-model="isCustomExpiration"
+							type="checkbox"
+							@change="form.expiration = undefined"
+						/>
+						<span for="isCustomExpiration">Custom</span>
 					</div>
-				</label>
-				<label class="flex flex-col py-1.5" for="isPasswordProtected">
-					<div class="py-1">
+				</c-box>
+				<c-box as="label" d="flex" flexDirection="column" py="1" for="isPasswordProtected">
+					<c-box>
 						<input
 							id="isPasswordProtected"
 							v-model="isPasswordProtected"
 							type="checkbox"
-							@change="form.password = undefined"
+							@change="form.password = ''"
 						/>
-						<span class="select-none">Password protected</span>
-					</div>
-					<input
-						v-if="isPasswordProtected"
-						v-model="form.password"
-						type="text"
-						class="form-input rounded-md block"
-					/>
-				</label>
-				<label class="flex flex-col py-1.5" for="isCustomLink">
-					<div class="py-1">
+						<span>Password protected</span>
+					</c-box>
+
+					<c-input-group v-if="isPasswordProtected">
+						<c-input
+							v-model="form.password"
+							:type="showPassword ? 'text' : 'password'"
+							placeholder="Enter password"
+						/>
+						<c-input-right-addon>
+							<c-button
+								h="1rem"
+								size="sm"
+								@click="showPassword = !showPassword"
+								variant="link"
+								outline="none"
+							>
+								{{ showPassword ? 'Hide' : 'Show' }}
+							</c-button>
+						</c-input-right-addon>
+					</c-input-group>
+				</c-box>
+				<c-box as="label" d="flex" flexDirection="column" py="1" for="isCustomLink">
+					<c-box>
 						<input
 							id="isCustomLink"
 							v-model="isCustomLink"
 							type="checkbox"
-							@change="form.customLink = undefined"
+							@change="form.customLink = ''"
 						/>
-						<span class="select-none">Custom Link</span>
-					</div>
-					<input
+						<span>Custom Link</span>
+					</c-box>
+					<c-input
 						v-if="isCustomLink"
 						v-model="form.customLink"
 						type="text"
 						class="form-input rounded-md block"
-						@input="e => checkIfLinkExists(e.target.value)"
+						@input="checkIfLinkExists"
 					/>
-					<span v-if="isCustomLink" class="flex"
-						>Your url will be {{ $config.axios.baseUrl }}/{{ form.customLink }}</span
+					<c-box d="block" as="span" w="100%" v-if="linkExists && isCustomLink"
+						>Link has already been taken</c-box
 					>
-					<span v-if="linkExists && isCustomLink">Link has already been taken</span>
-				</label>
-			</div>
-			<button
-				class="w-full px-4 py-2 text-white font-semibold bg-blue-500 rounded"
+				</c-box>
+			</c-box>
+			<c-button
+				w="100%"
+				variant-color="blue"
+				size="lg"
 				type="submit"
+				:disabled="getLoading('post') || !form.content"
 				@click.prevent="submitForm"
 			>
-				Create
-			</button>
-		</div>
-	</form>
+				{{ getLoading('post') ? 'Creating' : 'Create' }}
+			</c-button>
+		</c-box>
+	</CFormControl>
 </template>
 
 <script lang="ts">
@@ -80,35 +101,43 @@ import { mapGetters } from 'vuex'
 import TextArea from '../../components/common/TextArea.vue'
 import { CreatePost } from '~/store/post'
 
+import { CBox, CButton, CFlex, CHeading, CFormControl, CSelect, CInput } from '@chakra-ui/vue'
+
 interface Form {
 	content: string
 	expiration: number | undefined
-	password: string | undefined
-	customLink?: string | undefined
+	password: string
+	customLink: string
 }
 
 export default Vue.extend({
 	components: {
 		TextArea,
+		CBox,
+		CButton,
+		CFlex,
+		CHeading,
+		CInput,
+		CSelect,
+		CFormControl,
 	},
 	data() {
 		return {
 			isCustomExpiration: false,
 			isPasswordProtected: false,
 			isCustomLink: false,
+			showPassword: false,
 			form: {
 				content: '',
 				expiration: undefined,
-				password: undefined,
-				customLink: undefined,
+				password: '',
+				customLink: '',
 			} as Form,
 		}
 	},
 	computed: {
-		calculatedExpiration(): number | undefined {
-			return this.form.expiration
-		},
 		...mapGetters('post', ['linkExists']),
+		...mapGetters('status', ['getLoading']),
 	},
 	async mounted() {
 		await this.$store.dispatch('initialize')
@@ -119,15 +148,18 @@ export default Vue.extend({
 				content: this.form.content,
 				password: this.form.password,
 				customLink: this.form.customLink,
-				expiration: this.form.expiration ?? this.calculatedExpiration,
+				expiration: this.form.expiration,
 			} as CreatePost)
 		},
-		checkIfLinkExists() {
-			const store = this.$store
-			debounce(async function (value: string) {
-				await store.dispatch('post/checkIfLinkExists', value)
-			}, 400)
+		calculatedExpiration(e: Event) {
+			const input = e.target as HTMLInputElement
+			var delta = Math.abs(new Date().valueOf() - new Date(input.value).valueOf())
+			this.form.expiration = delta / 60000
 		},
+		checkIfLinkExists: debounce(async function (value: string) {
+			if (!value) return
+			await this.$store.dispatch('post/checkIfLinkExists', value)
+		}, 400),
 	},
 })
 </script>

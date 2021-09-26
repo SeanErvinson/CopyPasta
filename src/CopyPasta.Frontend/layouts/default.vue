@@ -1,18 +1,30 @@
 <template>
-	<div class="flex flex-col gap-y-2">
-		<Header />
-		<Nuxt class="flex-grow" />
-		<h1>Footer</h1>
-	</div>
+	<CThemeProvider>
+		<CColorModeProvider>
+			<CBox font-family="body" as="main" h="100%" w="100%">
+				<CReset />
+				<Header />
+				<Nuxt />
+				<Footer />
+			</CBox>
+		</CColorModeProvider>
+	</CThemeProvider>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import Header from '../components/layouts/Header.vue'
+import Footer from '../components/layouts/Footer.vue'
+import { CThemeProvider, CColorModeProvider, CReset, CBox } from '@chakra-ui/vue'
 
 export default Vue.extend({
 	components: {
 		Header,
+		Footer,
+		CThemeProvider,
+		CColorModeProvider,
+		CReset,
+		CBox,
 	},
 })
 </script>
@@ -45,5 +57,16 @@ div#__nuxt,
 #__layout > div,
 #app {
 	height: 100vh;
+}
+main {
+	display: flex;
+	flex-direction: column;
+}
+main > div {
+	flex: 1;
+}
+.modal > section {
+	margin: 8px;
+	border-radius: 8px;
 }
 </style>

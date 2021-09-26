@@ -1,19 +1,27 @@
 <template>
-	<div class="container flex flex-col mx-auto">
-		<PostForm />
+	<c-flex direction="column">
+		<c-box flex="1">
+			<PostForm />
+		</c-box>
 		<span v-if="getLoading('initial')">Loading</span>
 		<span v-else>CopyPasta counter: {{ getStats.postCount }}</span>
-	</div>
+		<CreatedPostModal />
+	</c-flex>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import PostForm from '../components/Home/PostForm.vue'
+import { CFlex, CBox } from '@chakra-ui/vue'
+import CreatedPostModal from '~/components/Home/CreatedPostModal.vue'
 
 export default Vue.extend({
 	components: {
+		CFlex,
+		CBox,
 		PostForm,
+		CreatedPostModal,
 	},
 	data() {
 		return {

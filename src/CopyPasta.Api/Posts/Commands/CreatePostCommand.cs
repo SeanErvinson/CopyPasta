@@ -12,14 +12,14 @@ using Microsoft.Extensions.Options;
 
 namespace CopyPasta.Api.Posts.Commands
 {
-    public record CreatePostCommand : IRequest
+    public record CreatePostCommand : IRequest<CreatePostCommandDto>
     {
         public string Content { get; init; } = string.Empty;
         public string? Password { get; init; }
         public double? Expiration { get; init; }
         public string? CustomLink { get; init; }
 
-        public class Handler : IRequestHandler<CreatePostCommand>
+        public class Handler : IRequestHandler<CreatePostCommand, CreatePostCommandDto>
         {
             private const int MaxRetries = 1000;
             private readonly IPostRepository _postRepository;
@@ -36,7 +36,7 @@ namespace CopyPasta.Api.Posts.Commands
                 _mediator = mediator;
             }
 
-            public async Task<Unit> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+            public async Task<CreatePostCommandDto> Handle(CreatePostCommand request, CancellationToken cancellationToken)
             {
                 var postLink = request.CustomLink;
                 if (!string.IsNullOrEmpty(postLink))
@@ -69,8 +69,10 @@ namespace CopyPasta.Api.Posts.Commands
                 }
 
                 await _postRepository.CreatePostAsync(newPost, cancellationToken);
-                return Unit.Value;
+                return new CreatePostCommandDto(postLink, newPost.ExpiresIn);
             }
         }
+
     }
+    public record CreatePostCommandDto(string Link, DateTime? Expiration);
 }

@@ -1,15 +1,25 @@
 <template>
-	<header class="flex flex-col mx-auto items-center gap-y-2">
-		<h1 class="font-semibold text-gray-800 antialiased text-4xl md:text-5xl">CopyPasta</h1>
-		<h2 class="font-medium text-gray-500 underline text-2xl md:text-3xl">
-			Just <span class="bg-gray-400 text-white px-1 rounded-md">Ctrl+C</span>
-			<span class="bg-gray-400 text-white px-1 rounded-md">Ctrl+V</span>
-		</h2>
-	</header>
+	<c-box as="header" d="flex" flexDirection="column" mx="auto" mb="2" align-items="center">
+		<c-heading as="h1" size="2xl" color="gray.800" fontWeight="semibold">
+			<c-link as="router-link" to="/"> CopyPasta </c-link>
+		</c-heading>
+		<c-heading as="u" size="lg" color="gray.500" fontWeight="medium">
+			CopyPasta just
+			<c-box as="span" bg="gray.500" px="1" color="white" borderRadius="md">Ctrl+C</c-box>
+			<c-box as="span" bg="gray.500" px="1" color="white" borderRadius="md">Ctrl+V</c-box>
+		</c-heading>
+		<h2 class="font-medium text-gray-500 underline text-2xl md:text-3xl"></h2>
+	</c-box>
 </template>
 
 <script>
-export default {}
+import { CHeading, CBox } from '@chakra-ui/vue'
+export default {
+	components: {
+		CHeading,
+		CBox,
+	},
+}
 </script>
 
 <style></style>
