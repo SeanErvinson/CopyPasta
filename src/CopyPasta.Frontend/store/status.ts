@@ -53,4 +53,8 @@ export const mutations: vuex.MutationTree<RootState> = {
 	SET_ERROR(state, status: FlagStatus) {
 		state.status[status.name].error = status.flag
 	},
+	RESET_STATE(state, name: string) {
+		state.status[name].loading = false
+		state.status[name].error = false
+	},
 }

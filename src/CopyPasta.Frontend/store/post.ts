@@ -107,6 +107,7 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		}
 	},
 	async createPost({ commit }, payload: CreatePost) {
+		commit('status/RESET_STATE', 'post', { root: true })
 		commit('status/SET_LOADING', { name: 'post', flag: true } as FlagStatus, { root: true })
 		try {
 			const response = (await this.$axios.$post(`posts`, payload)) as CreatePostResponse

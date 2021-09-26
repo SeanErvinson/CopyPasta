@@ -40,8 +40,23 @@ export default Vue.extend({
 			copyText: 'Copy',
 		}
 	},
+	watch: {
+		postError(newState) {
+			if (!newState) return
+			this.$toast({
+				title: 'An error occured',
+				description: 'Something went wrong. Please try again.',
+				status: 'error',
+				duration: 2000,
+			})
+		},
+	},
 	computed: {
 		...mapGetters('post', ['isModalOpen', 'createdPost']),
+		...mapGetters('status', ['getError']),
+		postError(): boolean {
+			return this.getError('post')
+		},
 		postLink(): string {
 			return `${this.baseUrl}p/${this.createdPost.link}`
 		},
