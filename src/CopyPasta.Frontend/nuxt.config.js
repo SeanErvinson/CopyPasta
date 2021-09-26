@@ -1,3 +1,5 @@
+import mainTheme from './ui/main-theme.js'
+
 export default {
 	ssr: false,
 
@@ -23,9 +25,9 @@ export default {
 
 	components: true,
 
-	buildModules: ['@nuxt/typescript-build', '@nuxtjs/tailwindcss'],
+	buildModules: ['@nuxt/typescript-build'],
 
-	modules: ['@nuxtjs/axios'],
+	modules: ['@nuxtjs/axios', '@chakra-ui/nuxt'],
 
 	axios: {
 		baseUrl: 'https://localhost:5001/api',
@@ -38,4 +40,7 @@ export default {
 	},
 
 	build: {},
+	chakra: {
+		extendTheme: mainTheme,
+	},
 }
