@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Dynamic;
 using Newtonsoft.Json;
+using CopyPasta.Api.Firestore;
 
 namespace CopyPasta.Api.Services
 {
@@ -13,9 +14,17 @@ namespace CopyPasta.Api.Services
     {
         private const string CollectionName = "posts";
         private readonly FirestoreDb _database;
+        
         public FirestorePostRepository()
         {
-            _database = FirestoreDb.Create("copypasta-project");
+            _database = new FirestoreDbBuilder
+            {
+                ProjectId = "copypasta-project",
+                ConverterRegistry = new ConverterRegistry
+                {
+                    new GuidConverter()
+                }
+            }.Build();
         }
         public async Task CreatePostAsync(Post post, CancellationToken cancellationToken = default)
         {
@@ -37,11 +46,8 @@ namespace CopyPasta.Api.Services
             var collection = _database.Collection(CollectionName);
             var query = collection.WhereEqualTo("Link", link).Limit(1);
             var snapshot = await query.GetSnapshotAsync(cancellationToken);
-            var data = snapshot.Documents.FirstOrDefault()?.ConvertTo<object>();
-            if (data is null)
-                return null;
-            var jsonData = JsonConvert.SerializeObject(data);
-            return JsonConvert.DeserializeObject<Post>(jsonData);
+            var data = snapshot.Documents.FirstOrDefault()?.ConvertTo<Post>();
+            return data;
         }
     }
 }
