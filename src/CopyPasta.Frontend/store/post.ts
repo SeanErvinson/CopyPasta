@@ -1,5 +1,6 @@
+import { AxiosError } from 'axios'
 import * as vuex from 'vuex'
-import { FlagStatus } from './status'
+import { ErrorPayload, FlagStatus } from './status'
 
 interface PostInfo {
 	id: string
@@ -30,7 +31,7 @@ interface CreatePostResponse {
 
 export const state = () => ({
 	info: {} as PostInfo,
-	isLocked: true,
+	isVisible: true,
 	content: '',
 	linkExists: false,
 	isModalOpen: false,
@@ -43,8 +44,8 @@ export const getters: vuex.GetterTree<RootState, RootState> = {
 	getInfo: state => {
 		return state.info
 	},
-	isLocked: state => {
-		return state.isLocked
+	isVisible: state => {
+		return state.isVisible
 	},
 	getContent: state => {
 		return state.content
@@ -64,8 +65,8 @@ export const mutations: vuex.MutationTree<RootState> = {
 	SET_INFO(state, info: PostInfo) {
 		state.info = info
 	},
-	SET_LOCK(state, flag: boolean) {
-		state.isLocked = flag
+	SET_IS_VISIBLE(state, flag: boolean) {
+		state.isVisible = flag
 	},
 	SET_CONTENT(state, content: string) {
 		state.content = content
@@ -87,21 +88,40 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		try {
 			const postInfo = (await this.$axios.$get(`posts/${link}/info`)) as PostInfo
 			commit('SET_INFO', postInfo)
-			if (postInfo.isPasswordProtected) commit('SET_LOCK', postInfo.isPasswordProtected)
+			if (postInfo.isPasswordProtected) commit('SET_IS_VISIBLE', postInfo.isPasswordProtected)
 			else dispatch('fetchPost', { link } as GetPost)
-		} catch (error) {
-			commit('status/SET_ERROR', { name: 'postInfo', flag: true } as FlagStatus, { root: true })
+		} catch (err: unknown) {
+			const error = err as AxiosError<Error>
+			commit(
+				'status/SET_ERROR',
+				{
+					name: 'postInfo',
+					error: { statusCode: error.response?.status, reason: error.response?.data.message },
+				} as ErrorPayload,
+				{
+					root: true,
+				},
+			)
+		} finally {
+			commit('status/SET_LOADING', { name: 'postInfo', flag: false } as FlagStatus, { root: true })
 		}
-		commit('status/SET_LOADING', { name: 'postInfo', flag: false } as FlagStatus, { root: true })
 	},
 	async fetchPost({ commit }, payload: GetPost) {
 		commit('status/SET_LOADING', { name: 'post', flag: true } as FlagStatus, { root: true })
 		try {
 			const post = (await this.$axios.$post(`posts/${payload.link}`, { password: payload.password })) as Post
-			commit('SET_LOCK', false)
+			commit('SET_IS_VISIBLE', false)
 			commit('SET_CONTENT', post.content)
-		} catch (error) {
-			commit('status/SET_ERROR', { name: 'post', flag: true } as FlagStatus, { root: true })
+		} catch (err: unknown) {
+			const error = err as AxiosError<Error>
+			commit(
+				'status/SET_ERROR',
+				{
+					name: 'post',
+					error: { statusCode: error.response?.status, reason: error.response?.data.message },
+				} as ErrorPayload,
+				{ root: true },
+			)
 		} finally {
 			commit('status/SET_LOADING', { name: 'post', flag: false } as FlagStatus, { root: true })
 		}
@@ -113,8 +133,16 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 			const response = (await this.$axios.$post(`posts`, payload)) as CreatePostResponse
 			commit('SET_IS_MODAL_OPEN', true)
 			commit('SET_CREATED_POST', response)
-		} catch (error) {
-			commit('status/SET_ERROR', { name: 'post', flag: true } as FlagStatus, { root: true })
+		} catch (err: unknown) {
+			const error = err as AxiosError<Error>
+			commit(
+				'status/SET_ERROR',
+				{
+					name: 'post',
+					error: { statusCode: error.response?.status, reason: error.response?.data.message },
+				} as ErrorPayload,
+				{ root: true },
+			)
 		} finally {
 			commit('status/SET_LOADING', { name: 'post', flag: false } as FlagStatus, { root: true })
 		}
@@ -124,10 +152,19 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		try {
 			const result = await this.$axios.$get(`posts/${value}/exists`)
 			commit('SET_LINK_EXIST', result)
-		} catch (error) {
-			commit('status/SET_ERROR', { name: 'checkLinkExists', flag: true } as FlagStatus, { root: true })
+		} catch (err: unknown) {
+			const error = err as AxiosError<Error>
+			commit(
+				'status/SET_ERROR',
+				{
+					name: 'checkLinkExists',
+					error: { statusCode: error.response?.status, reason: error.response?.data.message },
+				} as ErrorPayload,
+				{ root: true },
+			)
+		} finally {
+			commit('status/SET_LOADING', { name: 'checkLinkExists', flag: false } as FlagStatus, { root: true })
 		}
-		commit('status/SET_LOADING', { name: 'checkLinkExists', flag: false } as FlagStatus, { root: true })
 	},
 	resetPostModal({ commit }) {
 		commit('SET_IS_MODAL_OPEN', false)

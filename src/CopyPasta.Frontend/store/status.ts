@@ -2,7 +2,12 @@ import * as vuex from 'vuex'
 
 interface Status {
 	loading: boolean
-	error: boolean
+	error?: Error
+}
+
+interface Error {
+	statusCode: number
+	reason?: string
 }
 
 interface StatusMap {
@@ -13,24 +18,28 @@ export interface FlagStatus {
 	name: string
 	flag: boolean
 }
+export interface ErrorPayload {
+	name: string
+	error: Error
+}
 
 export const state = () => ({
 	status: {
 		initial: {
 			loading: false,
-			error: false,
+			error: undefined,
 		},
 		post: {
 			loading: false,
-			error: false,
+			error: undefined,
 		},
 		postInfo: {
 			loading: false,
-			error: false,
+			error: undefined,
 		},
 		checkLinkExists: {
 			loading: false,
-			error: false,
+			error: undefined,
 		},
 	} as StatusMap,
 })
@@ -50,11 +59,11 @@ export const mutations: vuex.MutationTree<RootState> = {
 	SET_LOADING(state, status: FlagStatus) {
 		state.status[status.name].loading = status.flag
 	},
-	SET_ERROR(state, status: FlagStatus) {
-		state.status[status.name].error = status.flag
+	SET_ERROR(state, payload: ErrorPayload) {
+		state.status[payload.name].error = payload.error
 	},
 	RESET_STATE(state, name: string) {
 		state.status[name].loading = false
-		state.status[name].error = false
+		state.status[name].error = undefined
 	},
 }

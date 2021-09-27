@@ -1,5 +1,6 @@
+import { AxiosError } from 'axios'
 import * as vuex from 'vuex'
-import { FlagStatus } from './status'
+import { ErrorPayload, FlagStatus } from './status'
 
 interface Stat {
 	postCount: number | undefined
@@ -29,8 +30,16 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		try {
 			const stats = await this.$axios.$get('/statistics')
 			commit('SET_STATS', stats)
-		} catch (error) {
-			commit('status/SET_ERROR', { name: 'initial', flag: true } as FlagStatus, { root: true })
+		} catch (err: unknown) {
+			const error = err as AxiosError<Error>
+			commit(
+				'status/SET_ERROR',
+				{
+					name: 'initial',
+					error: { statusCode: error.response?.status, reason: error.response?.data.message },
+				} as ErrorPayload,
+				{ root: true },
+			)
 		}
 		commit('status/SET_LOADING', { name: 'initial', flag: false } as FlagStatus, { root: true })
 	},

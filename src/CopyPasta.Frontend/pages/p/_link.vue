@@ -1,7 +1,7 @@
 <template>
 	<div class="container mx-auto h-full">
 		<div v-if="getInfo.isPasswordProtected"><PasswordModal /></div>
-		<div v-if="!isLocked" class="block p-4 h-full bg-white border border-gray-200 rounded shadow-sm">
+		<div v-if="!isVisible" class="block p-4 h-full bg-white border border-gray-200 rounded shadow-sm">
 			<p v-html="getContent"></p>
 		</div>
 	</div>
@@ -17,7 +17,8 @@ export default Vue.extend({
 		PasswordModal,
 	},
 	computed: {
-		...mapGetters('post', ['getInfo', 'getContent', 'isLocked']),
+		...mapGetters('post', ['getInfo', 'getContent', 'isVisible']),
+		...mapGetters('status', ['getError']),
 	},
 	async mounted() {
 		await this.$store.dispatch('post/fetchPostInfo', this.$route.params.link)
