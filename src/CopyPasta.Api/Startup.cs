@@ -1,5 +1,6 @@
 using System.Reflection;
 using CopyPasta.Api.Interfaces;
+using CopyPasta.Api.Middlewares;
 using CopyPasta.Api.Options;
 using CopyPasta.Api.Services;
 using MediatR;
@@ -63,6 +64,8 @@ namespace CopyPasta.Api
             app.UseRouting();
 
             app.UseCors();
+
+            app.UseMiddleware<GlobalExceptionMiddleware>();
 
             app.UseAuthorization();
 
