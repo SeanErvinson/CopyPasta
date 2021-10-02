@@ -21,7 +21,7 @@ export default {
 
 	css: [],
 
-	plugins: [],
+	plugins: ['~/plugins/chakra'],
 
 	components: true,
 

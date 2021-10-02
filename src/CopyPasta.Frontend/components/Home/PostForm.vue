@@ -8,7 +8,6 @@
 		<c-box :flex="[null, null, 3, 2]" flexGrow="0" flexShrink="0" :my="[2, null, 0]" :ml="[0, null, 2]">
 			<c-box bg="white" py="4" px="5" borderRadius="lg" borderColor="gray.300" :mb="3">
 				<c-heading as="h2" size="lg" color="gray.700" fontWeight="semibold"> Options </c-heading>
-
 				<c-box as="label" d="flex" flexDirection="column" py="1" for="isCustomExpiration">
 					<span>Expires in</span>
 					<c-select borderRadius="md" v-if="!isCustomExpiration" v-model="form.expiration">
@@ -98,7 +97,7 @@
 import Vue from 'vue'
 import debounce from 'debounce'
 import { mapGetters } from 'vuex'
-import TextArea from '../../components/common/TextArea.vue'
+import TextArea from '~/components/common/TextArea.vue'
 import { CreatePost } from '~/store/post'
 
 import { CBox, CButton, CFlex, CHeading, CFormControl, CSelect, CInput } from '@chakra-ui/vue'

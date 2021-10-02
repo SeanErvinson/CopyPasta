@@ -8,17 +8,17 @@
 					<c-input type="text" id="post-link" readonly :value="postLink" />
 					<c-input-right-element>
 						<c-icon-button
-							icon="sun"
+							icon="copy"
 							aria-label="Copy to clipboard"
 							style="cursor: pointer"
-							@click="copyToClipboard"
+							@click="copyUrlToClipboard"
 						/>
 					</c-input-right-element>
 				</c-input-group>
 				{{ createdPost.expiration }}
 			</c-modal-body>
 			<c-modal-footer>
-				<c-button variant-color="blue" mr="3" @click="copyToClipboard"> {{ copyText }} </c-button>
+				<c-button variant-color="blue" mr="3" @click="copyUrlToClipboard"> {{ copyText }} </c-button>
 				<c-button @click="goToPost">Go to post</c-button>
 			</c-modal-footer>
 		</c-modal-content>
@@ -29,6 +29,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
+import { copyToClipboard } from '~/utils/documentUtils'
 
 export default Vue.extend({
 	mounted() {
@@ -63,12 +64,9 @@ export default Vue.extend({
 	},
 	methods: {
 		...mapActions('post', ['resetPostModal']),
-		copyToClipboard(): void {
+		copyUrlToClipboard(): void {
 			const link = document.querySelector('#post-link') as HTMLInputElement
-			link.select()
-			link.setSelectionRange(0, 99999)
-			document.execCommand('copy')
-			window.getSelection()?.removeAllRanges()
+			copyToClipboard(link.value)
 			this.copyText = 'Copied'
 			setInterval(() => {
 				this.copyText = 'Copy'

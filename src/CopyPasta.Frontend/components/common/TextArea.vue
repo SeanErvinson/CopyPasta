@@ -8,33 +8,50 @@ import { Editor, EditorContent } from '@tiptap/vue-2'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
-import CodeBlock from '@tiptap/extension-code-block'
 import Placeholder from '@tiptap/extension-placeholder'
 
 export default Vue.extend({
 	components: {
 		EditorContent,
 	},
+	props: {
+		isReadonly: {
+			type: Boolean,
+			default: false,
+		},
+		content: {
+			type: String || undefined,
+			required: false,
+		},
+	},
 	data() {
 		return {
-			value: '',
 			editor: null as unknown as Editor,
 		}
 	},
 	mounted() {
 		this.editor = new Editor({
-			extensions: [Document, Paragraph, Text, CodeBlock, Placeholder],
+			extensions: [Document, Paragraph, Text, Placeholder],
 			autofocus: true,
 			onUpdate: ({ editor }) => {
-				let html = editor.getHTML()
-				if (html === '<p></p>') html = ''
-				this.$emit('input', html)
+				let content = editor.getHTML(),
+					json = editor.getJSON().content
+				if (Array.isArray(json) && json.length === 1 && !json[0].hasOwnProperty('content')) {
+					content = ''
+				}
+				this.$emit('input', content)
 			},
+			editable: !this.isReadonly,
+			parseOptions: {
+				preserveWhitespace: true,
+			},
+			content: this.content,
 		})
+		this.$emit('startup', this.editor.state.doc.textContent)
 		this.editor.chain().focus().run()
 	},
 	beforeDestroy() {
-		;(this.editor as Editor).destroy()
+		this.editor.destroy()
 	},
 })
 </script>

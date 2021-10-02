@@ -13,8 +13,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import Header from '../components/layouts/Header.vue'
-import Footer from '../components/layouts/Footer.vue'
+import Header from '~/components/layouts/Header.vue'
+import Footer from '~/components/layouts/Footer.vue'
 import { CThemeProvider, CColorModeProvider, CReset, CBox } from '@chakra-ui/vue'
 
 export default Vue.extend({
@@ -46,6 +46,7 @@ html {
 *::after {
 	box-sizing: border-box;
 	margin: 0;
+	padding: 0;
 }
 html,
 body {

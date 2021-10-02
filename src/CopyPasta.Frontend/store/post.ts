@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios'
 import * as vuex from 'vuex'
+import { Post } from '~/common/types'
 import { ErrorPayload, FlagStatus } from './status'
 
 interface PostInfo {
@@ -19,11 +20,6 @@ export interface GetPost {
 	password: string | undefined
 }
 
-interface Post {
-	content: string
-	expiresOn: Date
-}
-
 interface CreatePostResponse {
 	link: string
 	expiration?: Date | undefined
@@ -32,7 +28,7 @@ interface CreatePostResponse {
 export const state = () => ({
 	info: {} as PostInfo,
 	isVisible: true,
-	content: '',
+	post: {} as Post,
 	linkExists: false,
 	isModalOpen: false,
 	createdPost: {} as CreatePostResponse,
@@ -47,8 +43,8 @@ export const getters: vuex.GetterTree<RootState, RootState> = {
 	isVisible: state => {
 		return state.isVisible
 	},
-	getContent: state => {
-		return state.content
+	getPost: state => {
+		return state.post
 	},
 	linkExists: state => {
 		return state.linkExists
@@ -68,8 +64,8 @@ export const mutations: vuex.MutationTree<RootState> = {
 	SET_IS_VISIBLE(state, flag: boolean) {
 		state.isVisible = flag
 	},
-	SET_CONTENT(state, content: string) {
-		state.content = content
+	SET_POST(state, post: Post) {
+		state.post = post
 	},
 	SET_CREATED_POST(state, createdPost: CreatePostResponse) {
 		state.createdPost = createdPost
@@ -79,6 +75,13 @@ export const mutations: vuex.MutationTree<RootState> = {
 	},
 	SET_IS_MODAL_OPEN(state, flag: boolean) {
 		state.isModalOpen = flag
+	},
+	RESET_POST(state) {
+		state.post = {} as Post
+		state.info = {} as PostInfo
+		state.isVisible = true
+		state.linkExists = false
+		state.isModalOpen = false
 	},
 }
 
@@ -111,7 +114,7 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		try {
 			const post = (await this.$axios.$post(`posts/${payload.link}`, { password: payload.password })) as Post
 			commit('SET_IS_VISIBLE', false)
-			commit('SET_CONTENT', post.content)
+			commit('SET_POST', post)
 		} catch (err: unknown) {
 			const error = err as AxiosError<Error>
 			commit(
@@ -165,6 +168,9 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 		} finally {
 			commit('status/SET_LOADING', { name: 'checkLinkExists', flag: false } as FlagStatus, { root: true })
 		}
+	},
+	resetPost({ commit }) {
+		commit('RESET_POST')
 	},
 	resetPostModal({ commit }) {
 		commit('SET_IS_MODAL_OPEN', false)
