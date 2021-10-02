@@ -44,9 +44,9 @@ namespace CopyPasta.Api.Posts.Queries
                 }
                 if (post.ExpiresIn < DateTime.UtcNow)
                     throw new BadRequestException("Post has expired");
-                return new PostDto(post.Content, post.ExpiresIn);
+                return new PostDto(post.Content, post.ExpiresIn, post.CreatedOn);
             }
         }
     }
-    public record PostDto(string content, DateTime? expiresIn);
+    public record PostDto(string content, DateTime? expiresIn, DateTime CreatedOn, string? CreatedBy = null);
 }

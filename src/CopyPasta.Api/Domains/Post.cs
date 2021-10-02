@@ -12,13 +12,15 @@ namespace CopyPasta.Api.Domains
         [FirestoreProperty(ConverterType = typeof(GuidConverter), Name = "Id")]
         public Guid Id { get; private set; }
         [FirestoreProperty]
-        public string Link { get; set; }
+        public string Link { get; private set; }
         [FirestoreProperty]
-        public string Content { get; set; }
+        public string Content { get; private set; }
         [FirestoreProperty]
-        public string? Password { get; set; }
+        public string? Password { get; private set; }
         [FirestoreProperty]
-        public DateTime? ExpiresIn { get; set; }
+        public DateTime? ExpiresIn { get; private set; }
+        [FirestoreProperty]
+        public DateTime CreatedOn { get; private set; }
 
         private Post() { }
         public Post(string link, string content)
@@ -26,6 +28,12 @@ namespace CopyPasta.Api.Domains
             Id = Guid.NewGuid();
             Content = content;
             Link = link;
+            CreatedOn = DateTime.UtcNow;
+        }
+
+        public void AddExpiration(double? expirationMinutes)
+        {
+            ExpiresIn = DateTime.UtcNow.AddMinutes(expirationMinutes ?? 0);
         }
 
         public async Task SetPassword(string password, string salt)

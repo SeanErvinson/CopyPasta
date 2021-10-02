@@ -65,7 +65,7 @@ namespace CopyPasta.Api.Posts.Commands
                 }
                 if (request.Expiration is not null)
                 {
-                    newPost.ExpiresIn = DateTime.UtcNow.AddMinutes(request.Expiration ?? 0);
+                    newPost.AddExpiration(request.Expiration);
                 }
 
                 await _postRepository.CreatePostAsync(newPost, cancellationToken);
