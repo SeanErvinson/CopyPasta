@@ -5,10 +5,9 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-2'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import Placeholder from '@tiptap/extension-placeholder'
+import { Document } from '@tiptap/extension-document'
+import { Paragraph } from '@tiptap/extension-paragraph'
+import { Text } from '@tiptap/extension-text'
 
 export default Vue.extend({
 	components: {
@@ -22,6 +21,7 @@ export default Vue.extend({
 		content: {
 			type: String || undefined,
 			required: false,
+			default: undefined,
 		},
 	},
 	data() {
@@ -31,12 +31,16 @@ export default Vue.extend({
 	},
 	mounted() {
 		this.editor = new Editor({
-			extensions: [Document, Paragraph, Text, Placeholder],
+			extensions: [Document, Paragraph, Text],
 			autofocus: true,
 			onUpdate: ({ editor }) => {
-				let content = editor.getHTML(),
-					json = editor.getJSON().content
-				if (Array.isArray(json) && json.length === 1 && !json[0].hasOwnProperty('content')) {
+				let content = editor.getHTML()
+				const json = editor.getJSON().content
+				if (
+					Array.isArray(json) &&
+					json.length === 1 &&
+					!Object.prototype.hasOwnProperty.call(json[0], 'content')
+				) {
 					content = ''
 				}
 				this.$emit('input', content)
@@ -45,9 +49,11 @@ export default Vue.extend({
 			parseOptions: {
 				preserveWhitespace: true,
 			},
-			content: this.content,
 		})
-		this.$emit('startup', this.editor.state.doc.textContent)
+		this.editor.commands.setContent(this.content, false, {
+			preserveWhitespace: true,
+		})
+		this.$emit('startup', this.editor.state.doc.textBetween(0, this.editor.state.doc.nodeSize - 2, '\n'))
 		this.editor.chain().focus().run()
 	},
 	beforeDestroy() {
@@ -72,6 +78,8 @@ export default Vue.extend({
 	border-radius: 0.375rem;
 	outline: none;
 	word-break: break-all;
+	overflow: auto;
+	white-space: pre-line;
 }
 .ProseMirror:focus-within {
 	border: 2px solid #4299e1;
