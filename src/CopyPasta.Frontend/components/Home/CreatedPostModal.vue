@@ -5,7 +5,7 @@
 			<c-modal-close-button />
 			<c-modal-body>
 				<c-input-group>
-					<c-input type="text" id="post-link" readonly :value="postLink" />
+					<c-input id="post-link" type="text" readonly :value="postLink" />
 					<c-input-right-element>
 						<c-icon-button
 							icon="copy"
@@ -15,7 +15,6 @@
 						/>
 					</c-input-right-element>
 				</c-input-group>
-				{{ createdPost.expiration }}
 			</c-modal-body>
 			<c-modal-footer>
 				<c-button variant-color="blue" mr="3" @click="copyUrlToClipboard"> {{ copyText }} </c-button>
@@ -32,14 +31,21 @@ import { mapGetters, mapActions } from 'vuex'
 import { copyToClipboard } from '~/utils/documentUtils'
 
 export default Vue.extend({
-	mounted() {
-		this.baseUrl = window.location.href
-	},
 	data() {
 		return {
 			baseUrl: '',
 			copyText: 'Copy',
 		}
+	},
+	computed: {
+		...mapGetters('post', ['isModalOpen', 'createdPost']),
+		...mapGetters('status', ['getError']),
+		postError(): boolean {
+			return this.getError('post')
+		},
+		postLink(): string {
+			return `${this.baseUrl}p/${this.createdPost.link}`
+		},
 	},
 	watch: {
 		postError(newState) {
@@ -52,15 +58,8 @@ export default Vue.extend({
 			})
 		},
 	},
-	computed: {
-		...mapGetters('post', ['isModalOpen', 'createdPost']),
-		...mapGetters('status', ['getError']),
-		postError(): boolean {
-			return this.getError('post')
-		},
-		postLink(): string {
-			return `${this.baseUrl}p/${this.createdPost.link}`
-		},
+	mounted() {
+		this.baseUrl = window.location.href
 	},
 	methods: {
 		...mapActions('post', ['resetPostModal']),

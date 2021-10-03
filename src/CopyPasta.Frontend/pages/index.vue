@@ -12,8 +12,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import PostForm from '~/components/Home/PostForm.vue'
 import { CFlex, CBox } from '@chakra-ui/vue'
+import PostForm from '~/components/Home/PostForm.vue'
 import CreatedPostModal from '~/components/Home/CreatedPostModal.vue'
 
 export default Vue.extend({

@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import * as vuex from 'vuex'
-import { Post } from '~/common/types'
 import { ErrorPayload, FlagStatus } from './status'
+import { Post } from '~/common/types'
 
 interface PostInfo {
 	id: string
@@ -109,25 +109,34 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 			commit('status/SET_LOADING', { name: 'postInfo', flag: false } as FlagStatus, { root: true })
 		}
 	},
-	async fetchPost({ commit }, payload: GetPost) {
-		commit('status/SET_LOADING', { name: 'post', flag: true } as FlagStatus, { root: true })
-		try {
-			const post = (await this.$axios.$post(`posts/${payload.link}`, { password: payload.password })) as Post
-			commit('SET_IS_VISIBLE', false)
-			commit('SET_POST', post)
-		} catch (err: unknown) {
-			const error = err as AxiosError<Error>
-			commit(
-				'status/SET_ERROR',
-				{
-					name: 'post',
-					error: { statusCode: error.response?.status, reason: error.response?.data.message },
-				} as ErrorPayload,
-				{ root: true },
-			)
-		} finally {
-			commit('status/SET_LOADING', { name: 'post', flag: false } as FlagStatus, { root: true })
-		}
+	fetchPost({ commit }, payload: GetPost): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			commit('status/SET_LOADING', { name: 'post', flag: true } as FlagStatus, { root: true })
+			this.$axios
+				.$post(`posts/${payload.link}`, { password: payload.password })
+				.then(
+					(post: Post) => {
+						commit('SET_IS_VISIBLE', false)
+						commit('SET_POST', post)
+						resolve()
+					},
+					err => {
+						const error = err as AxiosError<Error>
+						commit(
+							'status/SET_ERROR',
+							{
+								name: 'post',
+								error: { statusCode: error.response?.status, reason: error.response?.data.message },
+							} as ErrorPayload,
+							{ root: true },
+						)
+						reject(err)
+					},
+				)
+				.finally(() =>
+					commit('status/SET_LOADING', { name: 'post', flag: false } as FlagStatus, { root: true }),
+				)
+		})
 	},
 	async createPost({ commit }, payload: CreatePost) {
 		commit('status/RESET_STATE', 'post', { root: true })
@@ -171,6 +180,7 @@ export const actions: vuex.ActionTree<RootState, RootState> = {
 	},
 	resetPost({ commit }) {
 		commit('RESET_POST')
+		commit('status/RESET_STATE', 'postInfo', { root: true })
 	},
 	resetPostModal({ commit }) {
 		commit('SET_IS_MODAL_OPEN', false)

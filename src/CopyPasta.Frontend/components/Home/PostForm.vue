@@ -1,22 +1,27 @@
 <template>
-	<CFormControl d="flex" :flexDirection="['column', null, 'row']" mx="5" h="100%">
-		<c-box bg="white" :flex="[1, null, 7, null]" borderRadius="md" :my="[2, null, 0]" :mr="[0, null, 2]">
+	<CFormControl d="flex" :flex-direction="['column', null, 'row']" mx="5" h="100%">
+		<c-box bg="white" :flex="[1, null, 7, null]" border-radius="md" :my="[2, null, 0]" :mr="[0, null, 2]">
 			<client-only>
 				<TextArea v-model="form.content"></TextArea>
 			</client-only>
 		</c-box>
-		<c-box :flex="[null, null, 3, 2]" flexGrow="0" flexShrink="0" :my="[2, null, 0]" :ml="[0, null, 2]">
-			<c-box bg="white" py="4" px="5" borderRadius="lg" borderColor="gray.300" :mb="3">
-				<c-heading as="h2" size="lg" color="gray.700" fontWeight="semibold"> Options </c-heading>
-				<c-box as="label" d="flex" flexDirection="column" py="1" for="isCustomExpiration">
+		<c-box :flex="[null, null, 3, 2]" flex-grow="0" flex-shrink="0" :my="[2, null, 0]" :ml="[0, null, 2]">
+			<c-box bg="white" py="4" px="5" border-radius="lg" border-color="gray.300" :mb="3">
+				<c-heading as="h2" size="lg" color="gray.700" font-weight="semibold"> Options </c-heading>
+				<c-box as="label" d="flex" flex-direction="column" py="1" for="isCustomExpiration">
 					<span>Expires in</span>
-					<c-select borderRadius="md" v-if="!isCustomExpiration" v-model="form.expiration">
+					<c-select v-if="!isCustomExpiration" v-model="form.expiration" border-radius="md">
 						<option value="10">10 mins</option>
 						<option value="30">30 mins</option>
 						<option value="60">1 hour</option>
 						<option :value="'' || undefined" selected>Never</option>
 					</c-select>
-					<c-input v-else type="datetime-local" @change="calculatedExpiration" />
+					<c-input
+						v-else
+						type="datetime-local"
+						:value="customExpirationDate"
+						@change="calculatedExpiration"
+					/>
 					<div>
 						<input
 							id="isCustomExpiration"
@@ -27,7 +32,7 @@
 						<span for="isCustomExpiration">Custom</span>
 					</div>
 				</c-box>
-				<c-box as="label" d="flex" flexDirection="column" py="1" for="isPasswordProtected">
+				<c-box as="label" d="flex" flex-direction="column" py="1" for="isPasswordProtected">
 					<c-box>
 						<input
 							id="isPasswordProtected"
@@ -48,16 +53,16 @@
 							<c-button
 								h="1rem"
 								size="sm"
-								@click="showPassword = !showPassword"
 								variant="link"
 								outline="none"
+								@click="showPassword = !showPassword"
 							>
 								{{ showPassword ? 'Hide' : 'Show' }}
 							</c-button>
 						</c-input-right-addon>
 					</c-input-group>
 				</c-box>
-				<c-box as="label" d="flex" flexDirection="column" py="1" for="isCustomLink">
+				<c-box as="label" d="flex" flex-direction="column" py="1" for="isCustomLink">
 					<c-box>
 						<input
 							id="isCustomLink"
@@ -74,7 +79,7 @@
 						class="form-input rounded-md block"
 						@input="checkIfLinkExists"
 					/>
-					<c-box d="block" as="span" w="100%" v-if="linkExists && isCustomLink"
+					<c-box v-if="linkExists && isCustomLink" d="block" as="span" w="100%"
 						>Link has already been taken</c-box
 					>
 				</c-box>
@@ -97,10 +102,9 @@
 import Vue from 'vue'
 import debounce from 'debounce'
 import { mapGetters } from 'vuex'
+import { CBox, CButton, CHeading, CFormControl, CSelect, CInput } from '@chakra-ui/vue'
 import TextArea from '~/components/common/TextArea.vue'
 import { CreatePost } from '~/store/post'
-
-import { CBox, CButton, CFlex, CHeading, CFormControl, CSelect, CInput } from '@chakra-ui/vue'
 
 interface Form {
 	content: string
@@ -114,7 +118,6 @@ export default Vue.extend({
 		TextArea,
 		CBox,
 		CButton,
-		CFlex,
 		CHeading,
 		CInput,
 		CSelect,
@@ -132,6 +135,7 @@ export default Vue.extend({
 				password: '',
 				customLink: '',
 			} as Form,
+			customExpirationDate: '',
 		}
 	},
 	computed: {
@@ -152,8 +156,10 @@ export default Vue.extend({
 		},
 		calculatedExpiration(e: Event) {
 			const input = e.target as HTMLInputElement
-			var delta = Math.abs(new Date().valueOf() - new Date(input.value).valueOf())
+			const date = new Date(input.value)
+			const delta = date.valueOf() - new Date().valueOf()
 			this.form.expiration = delta / 60000
+			this.customExpirationDate = input.value
 		},
 		checkIfLinkExists: debounce(async function (value: string) {
 			if (!value) return

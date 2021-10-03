@@ -1,10 +1,10 @@
 <template>
-	<c-box as="footer" d="flex" flexDirection="column" mx="auto" mb="2" align-items="center">
+	<c-box as="footer" d="flex" flex-direction="column" mx="auto" mb="2" align-items="center">
 		<c-box>
 			<c-link as="router-link" to="/"> 🏠 Home </c-link> •
 			<c-link as="router-link" to="/terms"> 📑 Terms </c-link>
 		</c-box>
-		<c-text fontSize="sm">SeanErvinson - Yoink</c-text>
+		<c-text font-size="sm">SeanErvinson - Yoink</c-text>
 	</c-box>
 </template>
 

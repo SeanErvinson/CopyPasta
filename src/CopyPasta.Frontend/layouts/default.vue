@@ -13,9 +13,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { CThemeProvider, CColorModeProvider, CReset, CBox } from '@chakra-ui/vue'
 import Header from '~/components/layouts/Header.vue'
 import Footer from '~/components/layouts/Footer.vue'
-import { CThemeProvider, CColorModeProvider, CReset, CBox } from '@chakra-ui/vue'
 
 export default Vue.extend({
 	components: {

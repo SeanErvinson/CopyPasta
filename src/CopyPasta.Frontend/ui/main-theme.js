@@ -6,7 +6,7 @@ breakpoints.lg = breakpoints[2]
 breakpoints.xl = breakpoints[3]
 
 export default {
-	breakpoints: breakpoints,
+	breakpoints,
 	fonts: {
 		heading: '"Avenir Next", sans-serif',
 		body: 'system-ui, sans-serif',

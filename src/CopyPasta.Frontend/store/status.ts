@@ -1,15 +1,13 @@
 import * as vuex from 'vuex'
 
-interface Status {
-	loading: boolean
-	error?: Error
-}
-
 interface Error {
 	statusCode: number
 	reason?: string
 }
-
+interface Status {
+	loading: boolean
+	error?: Error
+}
 interface StatusMap {
 	[key: string]: Status
 }
