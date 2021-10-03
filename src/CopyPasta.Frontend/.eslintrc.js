@@ -6,14 +6,9 @@ module.exports = {
 	},
 	extends: ['@nuxtjs/eslint-config-typescript', 'plugin:nuxt/recommended', 'prettier'],
 	plugins: [],
-	// add your custom rules here
 	rules: {
-		'vue/attribute-hyphenation': [
-			'error',
-			'always' | 'never',
-			{
-				ignore: [],
-			},
-		],
+		'vue/component-definition-name-casing': ['error', 'kebab-case'],
+		'vue/attribute-hyphenation': ['error', 'always'],
+		'vue/order-in-components': ['error'],
 	},
 }
