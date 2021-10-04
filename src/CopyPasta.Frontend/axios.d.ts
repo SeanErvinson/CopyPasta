@@ -1,4 +1,12 @@
 declare module 'axios' {
+	export interface AxiosResponse<T = never> {
+		data: T
+		status: number
+		statusText: string
+		headers: Record<string, string>
+		request?: any
+	}
+
 	export interface AxiosError<T = never> extends Error {
 		config: AxiosRequestConfig
 		code?: string
@@ -6,12 +14,5 @@ declare module 'axios' {
 		response?: AxiosResponse<T>
 		isAxiosError: boolean
 		toJSON: () => object
-	}
-	export interface AxiosResponse<T = never> {
-		data: T
-		status: number
-		statusText: string
-		headers: Record<string, string>
-		request?: any
 	}
 }

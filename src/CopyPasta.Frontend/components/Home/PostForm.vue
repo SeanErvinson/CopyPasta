@@ -142,6 +142,9 @@ export default Vue.extend({
 		...mapGetters('post', ['linkExists']),
 		...mapGetters('status', ['getLoading']),
 	},
+	created() {
+		this.checkIfLinkExists = debounce(this.checkIfLinkExists, 400)
+	},
 	async mounted() {
 		await this.$store.dispatch('initialize')
 	},
@@ -161,10 +164,10 @@ export default Vue.extend({
 			this.form.expiration = delta / 60000
 			this.customExpirationDate = input.value
 		},
-		checkIfLinkExists: debounce(async function (value: string) {
+		async checkIfLinkExists(value: string) {
 			if (!value) return
 			await this.$store.dispatch('post/checkIfLinkExists', value)
-		}, 400),
+		},
 	},
 })
 </script>
