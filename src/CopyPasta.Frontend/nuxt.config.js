@@ -5,6 +5,10 @@ export default {
 
 	target: 'static',
 
+	generate: {
+		fallback: true,
+	},
+
 	head: {
 		title: 'CopyPasta.Frontend',
 		htmlAttrs: {
